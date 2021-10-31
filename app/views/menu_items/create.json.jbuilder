@@ -1,0 +1,1 @@
+json.partial! @menu_item, partial: 'menu_item', as: :object
