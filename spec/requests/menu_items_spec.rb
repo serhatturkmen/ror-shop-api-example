@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "MenuItems", type: :request do
   let(:headers) do
     {
-      'ACCEPT': 'application/json'
+      'ACCEPT': 'application/json', 'Access-Token': "Aa1234"
     }
   end
 

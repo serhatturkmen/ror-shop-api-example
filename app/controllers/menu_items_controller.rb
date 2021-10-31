@@ -5,7 +5,7 @@ class MenuItemsController < ApplicationController
     @menu_items = MenuItem.all
   end
 
-  def show;  end
+  def show; end
 
   def create
     @menu_item = MenuItem.create!(create_params)
@@ -17,7 +17,7 @@ class MenuItemsController < ApplicationController
 
   def destroy
     @menu_item.destroy!
-    render json:{success: true, error_message: nil}
+    render json: { success: true, error_message: nil }
   end
 
   private
@@ -33,4 +33,5 @@ class MenuItemsController < ApplicationController
   def create_params
     params.permit(:name, :price)
   end
+
 end
