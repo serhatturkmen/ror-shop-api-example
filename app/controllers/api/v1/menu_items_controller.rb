@@ -1,4 +1,4 @@
-class MenuItemsController < ApplicationController
+class Api::V1::MenuItemsController < ApplicationController
   before_action :find_menu_item, only: %i[show update destroy]
 
   def index
@@ -31,7 +31,7 @@ class MenuItemsController < ApplicationController
   end
 
   def create_params
-    params.permit(:name, :price)
+    params.permit(:name, :price, :menu_category_id)
   end
 
 end

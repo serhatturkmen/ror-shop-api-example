@@ -1,0 +1,1 @@
+json.array! @menu_categories, partial: 'menu_category', as: :object

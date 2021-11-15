@@ -7,16 +7,19 @@ RSpec.describe "MenuItems", type: :request do
     }
   end
 
-  let(:sample_menu_item) { MenuItem.create(name: 'Test', price: 10) }
-  let(:sample_menu_item2) { MenuItem.create(name: 'Test 2', price: 50) }
+  let(:create_category) { MenuCategory.create(name: 'Test Category') }
+  let(:sample_menu_item) {
+    MenuCategory.create(name: 'Test Category')
+    MenuItem.create(name: 'Test', price: 10, menu_category_id: 1)
+  }
+  let(:sample_menu_item2) { MenuItem.create(name: 'Test 2', price: 50, menu_category_id: 1) }
 
   it '#index' do
     sample_menu_item
     sample_menu_item2
 
-    get '/menu_items', headers: headers
+    get '/api/v1/menu_items', headers: headers
     body = JSON.parse(response.body)
-    # puts body
 
     expect(body.count).to(eq(2))
     expect(body[0]['id']).to(eq(sample_menu_item.id))
@@ -27,7 +30,7 @@ RSpec.describe "MenuItems", type: :request do
   it '#show' do
     sample_menu_item
 
-    get "/menu_items/#{sample_menu_item.id}", headers: headers
+    get "/api/v1/menu_items/#{sample_menu_item.id}", headers: headers
     body = JSON.parse(response.body)
 
     expect(body.count).to(be)
@@ -38,7 +41,7 @@ RSpec.describe "MenuItems", type: :request do
   it '#show-fail-undefined-id' do
     sample_menu_item
 
-    get "/menu_items/2", headers: headers
+    get "/api/v1/menu_items/2", headers: headers
     body = JSON.parse(response.body)
 
     expect(body['success']).to(eq(false))
@@ -46,13 +49,14 @@ RSpec.describe "MenuItems", type: :request do
   end
 
   it '#create' do
+    create_category
     params = {
       name: 'Test 3',
-      price: 80
+      price: 80,
+      menu_category_id: 1
     }
-    post '/menu_items', headers: headers, params: params
+    post '/api/v1/menu_items', headers: headers, params: params
     body = JSON.parse(response.body)
-    puts body
 
     expect(body.count).to(be)
     expect(response.status).to(eq(200))
@@ -61,9 +65,10 @@ RSpec.describe "MenuItems", type: :request do
   it '#create-fail-name' do
     params = {
       name: nil,
-      price: 1
+      price: 1,
+      menu_category_id: 1
     }
-    post '/menu_items', headers: headers, params: params
+    post '/api/v1/menu_items', headers: headers, params: params
     body = JSON.parse(response.body)
     expect(response.status).to(eq(422))
     expect(body['sucess']).to(be_falsey)
@@ -73,10 +78,12 @@ RSpec.describe "MenuItems", type: :request do
   it '#create-fail-price' do
     params = {
       name: 'Test 1',
-      price: nil
+      price: nil,
+      menu_category_id: 1
     }
-    post '/menu_items', headers: headers, params: params
+    post '/api/v1/menu_items', headers: headers, params: params
     body = JSON.parse(response.body)
+
     expect(response.status).to(eq(422))
     expect(body['sucess']).to(be_falsey)
     expect(body['error_message']).to(be)
@@ -89,7 +96,7 @@ RSpec.describe "MenuItems", type: :request do
       price: 90
     }
 
-    patch "/menu_items/#{sample_menu_item.id}", headers: headers, params: params
+    patch "/api/v1/menu_items/#{sample_menu_item.id}", headers: headers, params: params
     body = JSON.parse(response.body)
 
     expect(response.status).to(eq(200))
@@ -101,7 +108,7 @@ RSpec.describe "MenuItems", type: :request do
   it '#destroy' do
     sample_menu_item
 
-    delete "/menu_items/#{sample_menu_item.id}", headers: headers
+    delete "/api/v1/menu_items/#{sample_menu_item.id}", headers: headers
     expect(response.status).to(eq(200))
     expect(JSON(response.body)['success']).to(eq(true))
   end
@@ -109,8 +116,9 @@ RSpec.describe "MenuItems", type: :request do
   it '#destroy-fail' do
     sample_menu_item
 
-    delete "/menu_items/2", headers: headers
+    delete "/api/v1/menu_items/2", headers: headers
     expect(response.status).to(eq(422))
     expect(JSON(response.body)['success']).to(eq(false))
   end
+
 end
